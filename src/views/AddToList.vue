@@ -17,6 +17,7 @@
 </template>
 <script>
 import db from '../firebase/init'
+import store from '../store/state'
 
 export default {
     name: 'AddToList',
@@ -25,17 +26,20 @@ export default {
             title: null,
             content: null,
             ifDone: false,
-            feedback: null
+            feedback: null,
+            sharedState: store.state
         }
     },
     methods:{
         addToDB(){
             if(this.title){
                 this.feedback = null;
-                db.collection('bucket').add({
+                db.firestore().collection('bucket').add({
                     title: this.title,
                     content: this.content,
-                    ifDone: this.ifDone 
+                    ifDone: this.ifDone,
+                    user_id: this.sharedState.user_id
+
                 }).then( () => {
                     this.$router.push({name: 'List'})
                 }).catch(err => console.log(err))
@@ -43,6 +47,9 @@ export default {
                 this.feedback = "Add Todo before Submit"
             }
         }
+    },
+    mounted(){
+        console.log(this.sharedState)
     }
 }
 </script>

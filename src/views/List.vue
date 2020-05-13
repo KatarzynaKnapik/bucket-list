@@ -22,17 +22,20 @@
 
 <script>
 import db from '../firebase/init'
+import store from '../store/state'
 
 export default {
     name: 'List',
     data(){
         return{
-            things: []
+            things: [],
+            sharedState: store.state,
+            
         }
     },
     methods: {
         deleteTodo(id){
-            db.collection('bucket').doc(id).delete()
+            db.firestore().collection('bucket').doc(id).delete()
             .then(()=>{
                 this.things = this.things.filter(thing => {
                     return thing.id != id
@@ -43,7 +46,7 @@ export default {
             let lineTrough = document.querySelector('.bucket-list .card-title');
             let cardColor = document.querySelectorAll('.bucket-list .card')          
 
-            db.collection('bucket').doc(id).update({
+            db.firestore().collection('bucket').doc(id).update({
                 ifDone: true
             }).then(()=>{
                 this.things.forEach(thing => {
@@ -56,7 +59,7 @@ export default {
 
     },
     created(){
-        db.collection('bucket').get()
+        db.firestore().collection('bucket').where('user_id', '==', this.sharedState.user_id).get()
         .then(snapshot => {
             snapshot.forEach(doc => {
                 let todo = doc.data();
@@ -64,6 +67,9 @@ export default {
                 this.things.push(todo)
             });
         })
+    },
+    mounted(){
+        console.log('ss', this.sharedState)
     }
 }
 </script>

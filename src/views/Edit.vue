@@ -27,7 +27,7 @@ export default {
     },
     methods: {
         editTodo(){
-            db.collection('bucket').doc(this.thing.id).update({
+            db.firestore().collection('bucket').doc(this.thing.id).update({
                 title: this.thing.title,
                 content: this.thing.content 
             }).then( () =>{
@@ -38,7 +38,7 @@ export default {
         }
     },
     created(){
-        let ref = db.collection('bucket').doc(this.$route.params.todo_id)
+        let ref = db.firestore().collection('bucket').doc(this.$route.params.todo_id)
         ref.get().then(doc=>{
                 this.thing = doc.data(),
                 this.thing.id = doc.id
